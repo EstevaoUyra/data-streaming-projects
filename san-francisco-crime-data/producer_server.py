@@ -4,7 +4,6 @@ import time
 
 
 class ProducerServer(KafkaProducer):
-
     def __init__(self, input_file, topic, **kwargs):
         super().__init__(**kwargs)
         self.input_file = input_file
@@ -18,4 +17,4 @@ class ProducerServer(KafkaProducer):
                 time.sleep(1)
 
     def dict_to_binary(self, json_dict):
-        return json.dumps(json_dict).encode('utf-8')
+        return json.dumps(json_dict).encode("utf-8")

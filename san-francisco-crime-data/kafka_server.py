@@ -1,6 +1,7 @@
 import producer_server
 from CONSTANTS import BOOTSTRAP_SERVER
 
+
 def run_kafka_server():
     input_file = "./police-department-calls-for-service.json"
 
@@ -8,7 +9,7 @@ def run_kafka_server():
         input_file=input_file,
         topic="police.calls.service",
         bootstrap_servers=BOOTSTRAP_SERVER,
-        client_id="producer.calls_for_service"
+        client_id="producer.calls_for_service",
     )
     return producer
 

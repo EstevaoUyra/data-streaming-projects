@@ -5,29 +5,29 @@ from pyspark.sql.types import *
 import pyspark.sql.functions as psf
 from CONSTANTS import BOOTSTRAP_SERVER
 
-schema = StructType([
-    StructField("crime_id", StringType(), True),
-    StructField("original_crime_type_name", StringType(), True),
-    StructField("report_date", DateType(), True),
-    StructField("call_date", DateType(), True),
-    StructField("offense_date", DateType(), True),
-    StructField("call_time",  TimestampType(), True),
-    StructField("call_date_time", TimestampType(), True),
-    StructField("disposition", StringType(),True),
-    StructField("address", StringType(), True),
-    StructField("city", StringType(), True),
-    StructField("state", StringType(), True),
-    StructField("agency_id", IntegerType(), True),
-    StructField("address_type", StringType(), True),
-    StructField("common_location", StringType(), True)
-])
+schema = StructType(
+    [
+        StructField("crime_id", StringType(), True),
+        StructField("original_crime_type_name", StringType(), True),
+        StructField("report_date", DateType(), True),
+        StructField("call_date", DateType(), True),
+        StructField("offense_date", DateType(), True),
+        StructField("call_time", TimestampType(), True),
+        StructField("call_date_time", TimestampType(), True),
+        StructField("disposition", StringType(), True),
+        StructField("address", StringType(), True),
+        StructField("city", StringType(), True),
+        StructField("state", StringType(), True),
+        StructField("agency_id", IntegerType(), True),
+        StructField("address_type", StringType(), True),
+        StructField("common_location", StringType(), True),
+    ]
+)
 
 
 def run_spark_job(spark):
     df = (
-        spark
-        .readStream
-        .format("kafka")
+        spark.readStream.format("kafka")
         .option("kafka.bootstrap.servers", BOOTSTRAP_SERVER)
         .option("subscribe", "police.calls.service")
         .option("maxOffsetsPerTrigger", 200)
@@ -39,16 +39,11 @@ def run_spark_job(spark):
     # Take only value and convert it to String
     kafka_df = df.selectExpr("cast(value as string) value")
 
-    service_table = kafka_df\
-        .select(psf.from_json(psf.col('value'), schema).alias("DF"))\
-        .select("DF.*")
+    service_table = kafka_df.select(
+        psf.from_json(psf.col("value"), schema).alias("DF")
+    ).select("DF.*")
 
-    query = (service_table
-     .writeStream
-     .outputMode("append")
-     .format("console")
-     .start()
-     )
+    query = service_table.writeStream.outputMode("append").format("console").start()
 
     query.awaitTermination()
     #
@@ -87,11 +82,11 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
 
     # TODO Create Spark in Standalone mode
-    spark = SparkSession \
-        .builder \
-        .master("local[*]") \
-        .appName("KafkaSparkStructuredStreaming") \
+    spark = (
+        SparkSession.builder.master("local[*]")
+        .appName("KafkaSparkStructuredStreaming")
         .getOrCreate()
+    )
 
     logger.info("Spark started")
 
