@@ -18,4 +18,4 @@ class ProducerServer(KafkaProducer):
                 time.sleep(1)
 
     def dict_to_binary(self, json_dict):
-        return bytearray(json.dumps(json_dict), 'utf-8')
+        return json.dumps(json_dict).encode('utf-8')
