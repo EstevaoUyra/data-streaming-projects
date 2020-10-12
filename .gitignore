@@ -7,10 +7,8 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-<<<<<<< HEAD
-=======
+
 .json
->>>>>>> 8310ebc... Initial commit
 .Python
 build/
 develop-eggs/
