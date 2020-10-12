@@ -1,2 +1,3 @@
-# data-streaming-projects
-Two projects that I have developed while learning data streaming
+# San Francisco Crime Data
+
+This project was developed with a focus on Spark Streaming.
