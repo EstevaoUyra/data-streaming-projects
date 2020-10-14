@@ -48,9 +48,6 @@ def run_spark_job(spark):
 
     # # count the number of original crime type
     agg_df = distinct_table.groupBy("original_crime_type_name").count()
-    #
-    # # TODO Q1. Submit a screen shot of a batch ingestion of the aggregation
-    # # TODO write output stream
     query = (agg_df
              .writeStream
              .queryName("crime counter")
@@ -61,24 +58,27 @@ def run_spark_job(spark):
              .start()
              )
 
-    #
-    # # TODO attach a ProgressReporter
-    query.awaitTermination()
-    #
-    # # TODO get the right radio code json path
     radio_code_json_filepath = "./radio_code.json"
-    radio_code_df = spark.read.json(radio_code_json_filepath)
+    radio_code_df = spark.read.json(radio_code_json_filepath, multiLine=True)
+    radio_code_df.printSchema()
     radio_code_df = radio_code_df.withColumnRenamed("disposition_code", "disposition")
 
-    join_query = agg_df.join(radio_code_df, on="disposition")
-
+    radio_code_df.printSchema()
+    join_query = (
+                service_table
+                .join(radio_code_df, on="disposition")
+                .writeStream
+                .queryName("join disposition")
+                .outputMode("append")
+                .format("console")
+                .start()
+    )
     join_query.awaitTermination()
 
 
 if __name__ == "__main__":
     logger = logging.getLogger(__name__)
 
-    # TODO Create Spark in Standalone mode
     spark = (
         SparkSession.builder.master("local[*]")
         .appName("KafkaSparkStructuredStreaming")
