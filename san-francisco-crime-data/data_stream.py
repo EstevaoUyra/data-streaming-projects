@@ -53,6 +53,7 @@ def run_spark_job(spark):
     # # TODO write output stream
     query = (agg_df
              .writeStream
+             .queryName("crime counter")
              .trigger(processingTime="10 seconds")
              .option("maxRatePerPartition", 2)
              .outputMode("complete")
@@ -65,20 +66,13 @@ def run_spark_job(spark):
     query.awaitTermination()
     #
     # # TODO get the right radio code json path
-    # radio_code_json_filepath = ""
-    # radio_code_df = spark.read.json(radio_code_json_filepath)
-    #
-    # # clean up your data so that the column names match on radio_code_df and agg_df
-    # # we will want to join on the disposition code
-    #
-    # # TODO rename disposition_code column to disposition
-    # radio_code_df = radio_code_df.withColumnRenamed("disposition_code", "disposition")
-    #
-    # # TODO join on disposition column
-    # join_query = agg_df.
-    #
-    #
-    # join_query.awaitTermination()
+    radio_code_json_filepath = "./radio_code.json"
+    radio_code_df = spark.read.json(radio_code_json_filepath)
+    radio_code_df = radio_code_df.withColumnRenamed("disposition_code", "disposition")
+
+    join_query = agg_df.join(radio_code_df, on="disposition")
+
+    join_query.awaitTermination()
 
 
 if __name__ == "__main__":
