@@ -25,7 +25,3 @@ function kconsume {
   --topic "$1" \
   --from-beginning
 }
-
-function hello {
-   echo Hello!
-}
