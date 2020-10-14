@@ -26,6 +26,7 @@ schema = StructType(
 
 
 def run_spark_job(spark):
+
     df = (
         spark.readStream.format("kafka")
         .option("kafka.bootstrap.servers", BOOTSTRAP_SERVER)
@@ -43,23 +44,25 @@ def run_spark_job(spark):
         psf.from_json(psf.col("value"), schema).alias("DF")
     ).select("DF.*")
 
-    query = service_table.writeStream.outputMode("append").format("console").start()
+    distinct_table = service_table.select("original_crime_type_name", "disposition")
 
-    query.awaitTermination()
-    #
-    # # TODO select original_crime_type_name and disposition
-    # distinct_table =
-    #
     # # count the number of original crime type
-    # agg_df =
+    agg_df = distinct_table.groupBy("original_crime_type_name").count()
     #
     # # TODO Q1. Submit a screen shot of a batch ingestion of the aggregation
     # # TODO write output stream
-    # query = agg_df \
-    #
+    query = (agg_df
+             .writeStream
+             .trigger(processingTime="10 seconds")
+             .option("maxRatePerPartition", 2)
+             .outputMode("complete")
+             .format("console")
+             .start()
+             )
+
     #
     # # TODO attach a ProgressReporter
-    # query.awaitTermination()
+    query.awaitTermination()
     #
     # # TODO get the right radio code json path
     # radio_code_json_filepath = ""
@@ -87,7 +90,7 @@ if __name__ == "__main__":
         .appName("KafkaSparkStructuredStreaming")
         .getOrCreate()
     )
-
+    # spark.sparkContext.setLogLevel("WARN")
     logger.info("Spark started")
 
     run_spark_job(spark)
