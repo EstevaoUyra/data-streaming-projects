@@ -14,7 +14,7 @@ class ProducerServer(KafkaProducer):
             for line in json.loads(f.read()):
                 message = self.dict_to_binary(line)
                 self.send(self.topic, value=message)
-                time.sleep(1)
+                time.sleep(.001)
 
     def dict_to_binary(self, json_dict):
         return json.dumps(json_dict).encode("utf-8")
