@@ -31,7 +31,6 @@ def run_spark_job(spark):
         spark.readStream.format("kafka")
         .option("kafka.bootstrap.servers", BOOTSTRAP_SERVER)
         .option("subscribe", "police.calls.service")
-        .option("maxOffsetsPerTrigger", 200)
         .load()
     )
     # Show schema for the incoming resources for checks
@@ -51,8 +50,7 @@ def run_spark_job(spark):
     query = (agg_df
              .writeStream
              .queryName("crime counter")
-             .trigger(processingTime="10 seconds")
-             .option("maxRatePerPartition", 2)
+             .trigger(processingTime="1 seconds")
              .outputMode("complete")
              .format("console")
              .start()
@@ -82,6 +80,8 @@ if __name__ == "__main__":
     spark = (
         SparkSession.builder.master("local[*]")
         .appName("KafkaSparkStructuredStreaming")
+        .config("spark.driver.memory", "1g")
+        .config("spark.executor.memory", "1g")
         .getOrCreate()
     )
     # spark.sparkContext.setLogLevel("WARN")
