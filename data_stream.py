@@ -47,7 +47,7 @@ def run_spark_job(spark):
 
     # # count the number of original crime type
     agg_df = distinct_table \
-        .withWatermark(psf.col("call_date_time")) \
+        .withWatermark("call_date_time", "20 seconds") \
         .groupBy(
             psf.window(psf.col("call_date_time"), "10 seconds", "2 seconds"),
             psf.col("original_crime_type_name")) \
