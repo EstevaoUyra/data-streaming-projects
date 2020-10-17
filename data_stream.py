@@ -62,7 +62,7 @@ def run_spark_job(spark):
              .start()
              )
 
-    radio_code_json_filepath = "./radio_code.json"
+    radio_code_json_filepath = "radio_code.json"
     radio_code_df = spark.read.json(radio_code_json_filepath, multiLine=True)
     radio_code_df.printSchema()
     radio_code_df = radio_code_df.withColumnRenamed("disposition_code", "disposition")

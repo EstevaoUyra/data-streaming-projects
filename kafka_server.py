@@ -3,7 +3,7 @@ from CONSTANTS import BOOTSTRAP_SERVER
 
 
 def run_kafka_server():
-    input_file = "./police-department-calls-for-service.json"
+    input_file = "police-department-calls-for-service.json"
 
     producer = producer_server.ProducerServer(
         input_file=input_file,
