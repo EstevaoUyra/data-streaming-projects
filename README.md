@@ -20,14 +20,14 @@ spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.1 --maste
 ```
 
 It is possible to inspect the kafka topic directly using the console consumer, 
-![console-consumer](examples/kafka-console-consumer.png)
+![console-consumer](screenshots/kafka-console-consumer.png)
 
 While spark streaming works on the queries, it sends progress reports for each minibatch, such as this one
-![progress-report](examples/progress-report-crime-counter.png)
+![progress-report](screenshots/progress-report-crime-counter.png)
 
 While the query runs, opening your_username:4040 shows you spark's user interface, 
 where statistics about each query are depicted in charts
-![spark-ui](examples/2g_2g_agg.png)
+![spark-ui](screenshots/2g_2g_agg.png)
 
 ## Parameter keys
 > How did changing values on the SparkSession property parameters affect 
