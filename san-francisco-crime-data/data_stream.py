@@ -43,10 +43,16 @@ def run_spark_job(spark):
         psf.from_json(psf.col("value"), schema).alias("DF")
     ).select("DF.*")
 
-    distinct_table = service_table.select("original_crime_type_name", "disposition")
+    distinct_table = service_table.select("call_date_time", "original_crime_type_name", "disposition")
 
     # # count the number of original crime type
-    agg_df = distinct_table.groupBy("original_crime_type_name").count()
+    agg_df = distinct_table \
+        .withWatermark(psf.col("call_date_time")) \
+        .groupBy(
+            psf.window(psf.col("call_date_time"), "10 seconds", "2 seconds"),
+            psf.col("original_crime_type_name")) \
+        .count()
+
     query = (agg_df
              .writeStream
              .queryName("crime counter")
